@@ -18,6 +18,7 @@ library
   exposed-modules:     Lib
   build-depends:       base >= 4.7 && < 5
                      , persistent >= 2.5
+                     , persistent-template >= 2.5
                      , persistent-sqlite >= 2.5
                      , resource-pool >= 0.2.3.2
 

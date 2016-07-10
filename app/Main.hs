@@ -7,12 +7,13 @@ import           Control.Monad.Logger    (runStdoutLoggingT)
 import           Database.Persist.Sqlite (createSqlitePool)
 import           Web.Spock.Safe          (get, post, runSpock, spockT, text, var, (<//>))
 
-import           Lib                     (runAppM)
+import           Lib                     (initializeDatabase, runAppM)
 
 
 main :: IO ()
 main = do
   pool <- runStdoutLoggingT $ createSqlitePool "/tmp/sample.db" 4
+  initializeDatabase pool
 
   runSpock 8080 $ spockT (runAppM pool) $ do
 
