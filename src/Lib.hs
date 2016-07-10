@@ -81,11 +81,13 @@ updateOrInsert :: ToBackendKey SqlBackend val => UpdateOrInsert val -> AppM (May
 updateOrInsert uoi =
   case (uoiEntityId uoi) of
     Just entityId -> do let k = toSqlKey entityId
-                        replace k $ uoiEntityValue uoi
-                         -- seems like no way to just receive number of updated/matched rows (shame on you Haskell!),
-                         -- this is kind of sad, so doing one more query just to check if there was smth for our key
+                         -- seems like no way to just receive number of updated/matched rows after update (shame on you Haskell!),
+                         -- this is kind of sad, so doing one more query just to check if there is something for our key in database
                         maybeVal <- get k
-                        return $ fmap (const k) maybeVal
+                        case maybeVal of
+                          Nothing -> return Nothing
+                          Just _  -> do replace k $ uoiEntityValue uoi
+                                        return $ Just k
     Nothing       -> do k <- insert $ uoiEntityValue uoi
                         return $ Just k
 
