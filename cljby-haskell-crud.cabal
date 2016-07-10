@@ -21,8 +21,9 @@ library
                      , persistent-template >= 2.5
                      , persistent-sqlite >= 2.5
                      , resource-pool >= 0.2.3.2
-                     , aeson >= 0.11.2.0
+                     , unordered-containers >= 0.2.7.0
                      , text >= 1.2.2.1
+                     , aeson >= 0.11.2.0
 
   default-language:    Haskell2010
 
@@ -37,8 +38,9 @@ executable cljby-haskell-crud-exe
                      , persistent-sqlite >= 2.5
                      , resource-pool >= 0.2.3.2
                      , monad-logger >= 0.3.19
-                     , aeson >= 0.11.2.0
+                     , unordered-containers >= 0.2.7.0
                      , text >= 1.2.2.1
+                     , aeson >= 0.11.2.0
                      , cljby-haskell-crud
   default-language:    Haskell2010
 
