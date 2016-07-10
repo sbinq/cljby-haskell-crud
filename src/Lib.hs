@@ -18,14 +18,16 @@ module Lib
     , encodeEntity
     , UpdateOrInsert(..)
     , updateOrInsert
+    , findById
     ) where
 
 
+import           Control.Monad           (return)
 import           Data.Aeson              (FromJSON (..), ToJSON (..), Value (..), (.:))
 import           Data.Aeson.TH           (deriveJSON)
 import qualified Data.HashMap.Strict     as HM
 import           Data.Int                (Int64)
-import           Database.Persist        (Entity (..), Key (..), insert, replace)
+import           Database.Persist        (Entity (..), Key (..), get, insert, replace)
 import           Database.Persist.Sqlite (ConnectionPool, SqlBackend, SqlPersistT, ToBackendKey, runMigration,
                                           runSqlPool, toSqlKey)
 import           Database.Persist.TH     (mkMigrate, mkPersist, persistLowerCase, share, sqlSettings)
@@ -81,3 +83,10 @@ updateOrInsert uoi =
                         replace k $ uoiEntityValue uoi -- TODO: handle wrong key case - return AppM (Maybe (Key val)) or smth
                         return k
     Nothing       -> insert $ uoiEntityValue uoi
+
+
+findById :: ToBackendKey SqlBackend val => Int64 -> AppM (Maybe (Entity val))
+findById entityId = do
+  let k = toSqlKey entityId
+  maybeVal <- get k
+  return $ fmap (Entity k) maybeVal
