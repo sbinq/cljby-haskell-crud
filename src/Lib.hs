@@ -21,6 +21,7 @@ module Lib
     , findById
     ) where
 
+-- TODO: consider using Sql - not Sqlite - a bit more reusable
 
 import           Control.Monad           (return)
 import           Data.Aeson              (FromJSON (..), ToJSON (..), Value (..), (.:?))
