@@ -1,21 +1,48 @@
-{-# LANGUAGE FlexibleContexts    #-}
-{-# LANGUAGE OverloadedStrings   #-}
-{-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE FlexibleContexts           #-}
+{-# LANGUAGE GADTs                      #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE MultiParamTypeClasses      #-}
+{-# LANGUAGE OverloadedStrings          #-}
+{-# LANGUAGE QuasiQuotes                #-}
+{-# LANGUAGE ScopedTypeVariables        #-}
+{-# LANGUAGE TemplateHaskell            #-}
+{-# LANGUAGE TypeFamilies               #-}
 
 module Main where
 
 import           Control.Monad.Logger      (runStdoutLoggingT)
 import           Control.Monad.Trans.Class (lift)
 import           Data.Aeson                (ToJSON, object, (.=))
+import           Data.Aeson.TH             (deriveJSON)
 import           Data.Int                  (Int64)
 import           Database.Persist          (Entity, Key)
+import           Database.Persist.Sql      (ConnectionPool, runMigration, runSqlPool)
 import           Database.Persist.Sqlite   (createSqlitePool)
+import           Database.Persist.TH       (mkMigrate, mkPersist, persistLowerCase, share, sqlSettings)
 import           Network.HTTP.Types        (status400, status404)
 import           Web.Spock.Safe            (ActionT, get, json, jsonBody', post, runSpock, setStatus, spockT, text, var,
                                             (<//>))
 
-import           Lib                       (AppM, Cat, Dog, UpdateOrInsert, encodeEntity, findById, initializeDatabase,
-                                            runAppM, updateOrInsert)
+import           Lib                       (AppM, UpdateOrInsert, encodeEntity, findById, runAppM, updateOrInsert)
+import           Utils                     (aesonOptions)
+
+
+share [mkPersist sqlSettings, mkMigrate "migrateAll"] [persistLowerCase|
+Cat
+    head String
+    tail String
+    deriving Show
+Dog
+    name String
+    age  Int
+    deriving Show
+|]
+
+$(deriveJSON (aesonOptions "cat") ''Cat)
+$(deriveJSON (aesonOptions "dog") ''Dog)
+
+initializeDatabase :: ConnectionPool -> IO ()
+initializeDatabase pool = runSqlPool (runMigration migrateAll) pool
 
 
 main :: IO ()

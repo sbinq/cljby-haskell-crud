@@ -18,8 +18,6 @@ library
   exposed-modules:     Lib
   build-depends:       base >= 4.7 && < 5
                      , persistent >= 2.5
-                     , persistent-template >= 2.5
-                     , persistent-sqlite >= 2.5
                      , resource-pool >= 0.2.3.2
                      , unordered-containers >= 0.2.7.0
                      , text >= 1.2.2.1
@@ -37,6 +35,7 @@ executable cljby-haskell-crud-exe
                      , http-types >= 0.9
                      , Spock >= 0.10
                      , persistent >= 2.5
+                     , persistent-template >= 2.5
                      , persistent-sqlite >= 2.5
                      , resource-pool >= 0.2.3.2
                      , monad-logger >= 0.3.19
