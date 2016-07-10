@@ -16,11 +16,11 @@ module Lib
     , initializeDatabase
     ) where
 
-import           Database.Persist.Sqlite (ConnectionPool, SqlPersistM, runMigration, runSqlPersistMPool, runSqlPool)
+import           Database.Persist.Sqlite (ConnectionPool, SqlPersistT, runMigration, runSqlPool)
 import           Database.Persist.TH     (mkMigrate, mkPersist, persistLowerCase, share, sqlSettings)
 
 
-type AppM = SqlPersistM
+type AppM = SqlPersistT IO
 
 share [mkPersist sqlSettings, mkMigrate "migrateAll"] [persistLowerCase|
 Cat
@@ -37,5 +37,5 @@ initializeDatabase :: ConnectionPool -> IO ()
 initializeDatabase pool = runSqlPool (runMigration migrateAll) pool
 
 runAppM :: ConnectionPool -> AppM a -> IO a
-runAppM pool appM = runSqlPersistMPool appM pool
+runAppM pool appM = runSqlPool appM pool
 
