@@ -77,13 +77,17 @@ instance FromJSON val => FromJSON (UpdateOrInsert val) where
   parseJSON other      = fail ("object expected, but received " ++ show other)
 
 
-updateOrInsert :: ToBackendKey SqlBackend val => UpdateOrInsert val -> AppM (Key val)
+updateOrInsert :: ToBackendKey SqlBackend val => UpdateOrInsert val -> AppM (Maybe (Key val))
 updateOrInsert uoi =
   case (uoiEntityId uoi) of
     Just entityId -> do let k = toSqlKey entityId
-                        replace k $ uoiEntityValue uoi -- TODO: handle wrong key case - return AppM (Maybe (Key val)) or smth
-                        return k
-    Nothing       -> insert $ uoiEntityValue uoi
+                        replace k $ uoiEntityValue uoi
+                         -- seems like no way to just receive number of updated/matched rows (shame on you Haskell!),
+                         -- this is kind of sad, so doing one more query just to check if there was smth for our key
+                        maybeVal <- get k
+                        return $ fmap (const k) maybeVal
+    Nothing       -> do k <- insert $ uoiEntityValue uoi
+                        return $ Just k
 
 
 findById :: ToBackendKey SqlBackend val => Int64 -> AppM (Maybe (Entity val))
