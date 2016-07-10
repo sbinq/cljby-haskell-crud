@@ -36,10 +36,16 @@ Dog
     name String
     age  Int
     deriving Show
+Human
+    firstName String
+    lastName  String
+    age       Int
+    deriving Show
 |]
 
 $(deriveJSON (aesonOptions "cat") ''Cat)
 $(deriveJSON (aesonOptions "dog") ''Dog)
+$(deriveJSON (aesonOptions "human") ''Human)
 
 initializeDatabase :: ConnectionPool -> IO ()
 initializeDatabase pool = runSqlPool (runMigration migrateAll) pool
@@ -68,6 +74,15 @@ main = do
     post "/dog" $ do
       cmd <- jsonBody'
       k <- lift $ updateOrInsert (cmd :: UpdateOrInsert Dog)
+      entityIdOr400 k
+
+    get ("/human" <//> var) $ \(humanId :: Int64) -> do
+      human <- lift $ findById humanId
+      entityOr404 (human :: Maybe (Entity Human))
+
+    post "/human" $ do
+      cmd <- jsonBody'
+      k <- lift $ updateOrInsert (cmd :: UpdateOrInsert Human)
       entityIdOr400 k
 
 
