@@ -16,9 +16,11 @@ module Lib
     , initializeDatabase
     ) where
 
+import           Data.Aeson.TH           (deriveJSON)
 import           Database.Persist.Sqlite (ConnectionPool, SqlPersistT, runMigration, runSqlPool)
 import           Database.Persist.TH     (mkMigrate, mkPersist, persistLowerCase, share, sqlSettings)
 
+import           Utils
 
 type AppM = SqlPersistT IO
 
@@ -33,9 +35,11 @@ Dog
     deriving Show
 |]
 
+$(deriveJSON (aesonOptions "cat") ''Cat)
+$(deriveJSON (aesonOptions "dog") ''Dog)
+
 initializeDatabase :: ConnectionPool -> IO ()
 initializeDatabase pool = runSqlPool (runMigration migrateAll) pool
 
 runAppM :: ConnectionPool -> AppM a -> IO a
 runAppM pool appM = runSqlPool appM pool
-
