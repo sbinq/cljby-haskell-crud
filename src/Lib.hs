@@ -70,7 +70,7 @@ encodeEntity (Entity key value) =
 
 data UpdateOrInsert val = UpdateOrInsert { uoiEntityId    :: Maybe Int64
                                          , uoiEntityValue :: val
-                                         }
+                                         } deriving (Show, Eq)
 
 instance FromJSON val => FromJSON (UpdateOrInsert val) where
   parseJSON (Object v) = UpdateOrInsert <$> v .:? "id" <*> (parseJSON $ Object $ HM.delete "id" v)
