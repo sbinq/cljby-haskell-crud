@@ -21,17 +21,15 @@ module Lib
     , findById
     ) where
 
--- TODO: consider using Sql - not Sqlite - a bit more reusable
-
-import           Control.Monad           (return)
-import           Data.Aeson              (FromJSON (..), ToJSON (..), Value (..), (.:?))
-import           Data.Aeson.TH           (deriveJSON)
-import qualified Data.HashMap.Strict     as HM
-import           Data.Int                (Int64)
-import           Database.Persist        (Entity (..), Key (..), get, insert, replace)
-import           Database.Persist.Sqlite (ConnectionPool, SqlBackend, SqlPersistT, ToBackendKey, runMigration,
-                                          runSqlPool, toSqlKey)
-import           Database.Persist.TH     (mkMigrate, mkPersist, persistLowerCase, share, sqlSettings)
+import           Control.Monad        (return)
+import           Data.Aeson           (FromJSON (..), ToJSON (..), Value (..), (.:?))
+import           Data.Aeson.TH        (deriveJSON)
+import qualified Data.HashMap.Strict  as HM
+import           Data.Int             (Int64)
+import           Database.Persist     (Entity (..), Key (..), get, insert, replace)
+import           Database.Persist.Sql (ConnectionPool, SqlBackend, SqlPersistT, ToBackendKey, runMigration, runSqlPool,
+                                       toSqlKey)
+import           Database.Persist.TH  (mkMigrate, mkPersist, persistLowerCase, share, sqlSettings)
 
 import           Utils
 
