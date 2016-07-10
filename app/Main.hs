@@ -1,18 +1,20 @@
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE OverloadedStrings   #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
 module Main where
 
-import Control.Monad.Logger (runStdoutLoggingT)
-import Database.Persist.Sqlite (SqlBackend, createSqlitePool)
-import Data.Pool (Pool)
-import Web.Spock.Safe (runSpock, spockT, get, post, (<//>), text, var)
+import           Control.Monad.Logger    (runStdoutLoggingT)
+import           Database.Persist.Sqlite (createSqlitePool)
+import           Web.Spock.Safe          (get, post, runSpock, spockT, text, var, (<//>))
+
+import           Lib                     (runAppM)
+
 
 main :: IO ()
 main = do
-  (pool :: Pool SqlBackend) <- runStdoutLoggingT $ createSqlitePool "/tmp/sample.db" 4
+  pool <- runStdoutLoggingT $ createSqlitePool "/tmp/sample.db" 4
 
-  runSpock 8080 $ spockT id $ do
+  runSpock 8080 $ spockT (runAppM pool) $ do
 
     get ("/cat" <//> var ) $ \(catId :: Int) -> do
       text $ "hello"
