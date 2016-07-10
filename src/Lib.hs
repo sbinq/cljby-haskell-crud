@@ -23,7 +23,7 @@ module Lib
 
 
 import           Control.Monad           (return)
-import           Data.Aeson              (FromJSON (..), ToJSON (..), Value (..), (.:))
+import           Data.Aeson              (FromJSON (..), ToJSON (..), Value (..), (.:?))
 import           Data.Aeson.TH           (deriveJSON)
 import qualified Data.HashMap.Strict     as HM
 import           Data.Int                (Int64)
@@ -72,7 +72,7 @@ data UpdateOrInsert val = UpdateOrInsert { uoiEntityId    :: Maybe Int64
                                          }
 
 instance FromJSON val => FromJSON (UpdateOrInsert val) where
-  parseJSON (Object v) = UpdateOrInsert <$> v .: "id" <*> (parseJSON $ Object $ HM.delete "id" v)
+  parseJSON (Object v) = UpdateOrInsert <$> v .:? "id" <*> (parseJSON $ Object $ HM.delete "id" v)
   parseJSON other      = fail ("object expected, but received " ++ show other)
 
 
