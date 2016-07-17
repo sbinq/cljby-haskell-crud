@@ -37,9 +37,14 @@ resolver: nightly-2016-07-16
 # will not be run. This is useful for tweaking upstream packages.
 packages:
 - '.'
+- location:
+    git: https://github.com/conal/hasktags # https://github.com/MarcWeber/hasktags/pull/25 pull request, not yet merged atm
+    commit: 747d7f66dce976545d8226d756dfdf67dea19fa7
+  extra-dep: true
 # Dependency packages to be pulled from upstream that are not in the resolver
 # (e.g., acme-missiles-0.3)
-extra-deps: []
+extra-deps:
+- json-0.9.1 # for hasktags
 
 # Override default flag values for local packages and extra-deps
 flags: {}
