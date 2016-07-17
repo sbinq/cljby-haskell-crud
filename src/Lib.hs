@@ -1,3 +1,4 @@
+{-# LANGUAGE ConstraintKinds            #-}
 {-# LANGUAGE FlexibleContexts           #-}
 {-# LANGUAGE GADTs                      #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
@@ -38,7 +39,10 @@ instance FromJSON val => FromJSON (UpdateOrInsert val) where
   parseJSON other      = fail ("object expected, but received " ++ show other)
 
 
-updateOrInsert :: ToBackendKey SqlBackend val => UpdateOrInsert val -> AppM (Maybe (Key val))
+type IsEntity val = ToBackendKey SqlBackend val
+
+
+updateOrInsert :: IsEntity val => UpdateOrInsert val -> AppM (Maybe (Key val))
 updateOrInsert uoi =
   case (uoiEntityId uoi) of
     Just entityId -> do let k = toSqlKey entityId
@@ -53,7 +57,7 @@ updateOrInsert uoi =
                         return $ Just k
 
 
-findById :: ToBackendKey SqlBackend val => Int64 -> AppM (Maybe (Entity val))
+findById :: IsEntity val => Int64 -> AppM (Maybe (Entity val))
 findById entityId = do
   let k = toSqlKey entityId
   maybeVal <- get k
